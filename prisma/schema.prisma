@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Products {
+  id                  String           @id @default(dbgenerated("gen_random_uuid()"))
+  created_at          DateTime         @default(now()) @db.Timestamptz(6)
+  product_name        String?
+  image_url           String[]
+  product_description String?
+  product_price       Decimal?         @default(0) @db.Decimal
+  sizing_information  String?
+  division            gender           @default(Women)
+  subdivision         subdivision?
+  stockInfo           ProductStockInfo[]
+
+  @@map("products")
+}
+
+model ProductStockInfo {
+  id                  String           @id @default(dbgenerated("gen_random_uuid()"))
+  created_at          DateTime         @default(now()) @db.Timestamptz(6)
+  image_url           String[]
+  hexColor            String
+  colorName           String
+  productInfo         Json
+  productSize         productSize[]    @default([Free])
+  quantity            Int              @default(0)
+
+  product             Products         @relation(fields: [productId], references: [id])
+  productId           String
+
+  cart                CartToProducts[]
+
+  @@map("productStockInfo")
+}
+
+model User {
+  id            String             @id @default(dbgenerated("gen_random_uuid()"))
+  name          String?
+  email         String             @unique
+  password      String?
+  emailVerified DateTime?          @map("email_verified")
+  image         String?
+  provider      verificationMethod @default(Email)
+  shopLink      String?            @map("shop_link")
+  userVerified  Boolean?           @default(false) @map("user_verified")
+  cart          Cart?
+
+  @@map("users")
+}
+
+model Cart {
+  id      String           @id @default(dbgenerated("gen_random_uuid()"))
+  userId  String           @unique
+  product CartToProducts[]
+  user    User             @relation(fields: [userId], references: [id])
+
+  @@map("carts")
+}
+
+model CartToProducts {
+  cartId              String
+  productStockInfoId  String
+  quantity            Int
+  cart                Cart              @relation(fields: [cartId], references: [id])
+  product             ProductStockInfo  @relation(fields: [productStockInfoId], references: [id])
+
+  @@id([cartId, productStockInfoId])
+  @@map("_cartToProducts")
+}
+
+enum gender {
+  Men
+  Women
+  Kids
+}
+
+enum verificationMethod {
+  Email
+  Google
+  Apple
+}
+
+enum productSize {
+  Free
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+}
+
+/// This enum is commented in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+enum subdivision {
+  W_Outer_       @map("21 (W Outer)")
+  W_Bottoms_     @map("22 (W Bottoms)")
+  W_Shirts_      @map("23 (W Shirts)")
+  W_Cut___Sewn_  @map("24 (W Cut & Sewn)")
+  W_Knit_        @map("25 (W Knit)")
+  W_Accessories_ @map("26 (W Accessories)")
+  W_Innerwear_   @map("27 (W Innerwear)")
+  W_Loungewear_  @map("28 (W Loungewear)")
+  W_Dresses_     @map("29 (W Dresses)")
+  M_Outer_       @map("31 (M Outer)")
+  M_Bottoms_     @map("32 (M Bottoms)")
+  M_Shirts_      @map("33 (M Shirts)")
+  M_Cut___Sewn_  @map("34 (M Cut & Sewn)")
+  M_Knit_        @map("35 (M Knit)")
+  M_Accessories_ @map("36 (M Accessories)")
+  M_Innerwear_   @map("37 (M Innerwear)")
+  K_Outer_       @map("11 (K Outer)")
+  K_Bottoms_     @map("12 (K Bottoms)")
+  K_Shirts_      @map("13 (K Shirts)")
+  K_Cut___Sewn_  @map("14 (K Cut & Sewn)")
+  K_Knit_        @map("15 (K Knit)")
+  K_Accessories_ @map("16 (K Accessories)")
+  K_Innerwear_   @map("17 (K Innerwear)")
+  K_Loungewear_  @map("18 (K Loungewear)")
+  G_Dresses_     @map("19 (G Dresses)")
+}
