@@ -3,21 +3,22 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Products {
-  id                  String           @id @default(dbgenerated("gen_random_uuid()"))
-  created_at          DateTime         @default(now()) @db.Timestamptz(6)
+  id                  String             @id @default(dbgenerated("gen_random_uuid()"))
+  created_at          DateTime           @default(now()) @db.Timestamptz(6)
   product_name        String?
   image_url           String[]
   product_description String?
-  product_price       Decimal?         @default(0) @db.Decimal
+  product_price       Decimal?           @default(0) @db.Decimal
   sizing_information  String?
-  division            gender           @default(Women)
+  division            gender             @default(Women)
   subdivision         subdivision?
   stockInfo           ProductStockInfo[]
 
@@ -25,19 +26,16 @@ model Products {
 }
 
 model ProductStockInfo {
-  id                  String           @id @default(dbgenerated("gen_random_uuid()"))
-  created_at          DateTime         @default(now()) @db.Timestamptz(6)
-  image_url           String[]
-  hexColor            String
-  colorName           String
-  productInfo         Json
-  productSize         productSize[]    @default([Free])
-  quantity            Int              @default(0)
-
-  product             Products         @relation(fields: [productId], references: [id])
-  productId           String
-
-  cart                CartToProducts[]
+  id          String           @id @default(dbgenerated("gen_random_uuid()"))
+  created_at  DateTime         @default(now()) @db.Timestamptz(6)
+  image_url   String[]
+  hexColor    String
+  productSize productSize[]    @default([Free])
+  quantity    Int              @default(0)
+  productId   String
+  colorName   String
+  cart        CartToProducts[]
+  product     Products         @relation(fields: [productId], references: [id])
 
   @@map("productStockInfo")
 }
@@ -67,11 +65,11 @@ model Cart {
 }
 
 model CartToProducts {
-  cartId              String
-  productStockInfoId  String
-  quantity            Int
-  cart                Cart              @relation(fields: [cartId], references: [id])
-  product             ProductStockInfo  @relation(fields: [productStockInfoId], references: [id])
+  cartId             String
+  productStockInfoId String
+  quantity           Int
+  cart               Cart             @relation(fields: [cartId], references: [id])
+  product            ProductStockInfo @relation(fields: [productStockInfoId], references: [id])
 
   @@id([cartId, productStockInfoId])
   @@map("_cartToProducts")
