@@ -12,16 +12,6 @@ export async function sendMail({
   body: string;
 }) {
   const { SMPT_EMAIL, SMPT_GMAIL_PASS } = process.env;
-export async function sendMail({
-  to,
-  subject,
-  body,
-}: {
-  to: string;
-  subject: string;
-  body: string;
-}) {
-  const { SMPT_EMAIL, SMPT_GMAIL_PASS } = process.env;
 
   const transport = nodemailer.createTransport({
     service: 'gmail',
@@ -47,24 +37,7 @@ export async function sendMail({
   // } catch (e) {
   //     console.log(e)
   // }
-  // try {
-  //     const testResult = await transport.verify();
-  //     console.log('Test resutl', testResult)
-  // } catch (e) {
-  //     console.log(e)
-  // }
 
-  try {
-    const sendResult = await transport.sendMail({
-      from: SMPT_EMAIL,
-      to,
-      subject,
-      html: body,
-    });
-    console.log(sendResult);
-  } catch (e) {
-    console.log(e);
-  }
   try {
     const sendResult = await transport.sendMail({
       from: SMPT_EMAIL,
@@ -84,13 +57,6 @@ export function compileActivationTemplate(name: string, url: string) {
     name,
     url,
   });
-  const template = Handlebars.compile(activationTemplate);
-  const htmlBody = template({
-    name,
-    url,
-  });
 
-  return htmlBody;
   return htmlBody;
 }
-
