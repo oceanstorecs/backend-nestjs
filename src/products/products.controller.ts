@@ -1,56 +1,42 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
+  // Post,
+  // Body,
+  // Patch,
   Param,
-  Res,
-  HttpStatus,
+  Delete,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { Response } from 'express';
+// import { CreateProductDto } from './dto/create-product.dto';
+// import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Get()
-  async getProducts(@Res() res: Response) {
-    const products = await this.productsService.getProducts();
+  // @Post()
+  // create(@Body() createProductDto: CreateProductDto) {
+  //   return this.productsService.create(createProductDto);
+  // }
 
-    if (!products) {
-      return res.status(HttpStatus.BAD_REQUEST).send('No products found');
-    }
-    return res.status(HttpStatus.OK).json(products);
+  @Get()
+  findAll() {
+    return this.productsService.findAll();
   }
 
   @Get(':id')
-  async getProduct(@Param('id') id: string, @Res() res: Response) {
-    const product = await this.productsService.getProduct(id);
-
-    if (!product) {
-      return res.status(HttpStatus.BAD_REQUEST).send('No product found');
-    }
-    return res.status(HttpStatus.OK).json(product);
+  findOne(@Param('id') id: string) {
+    return this.productsService.findOne(+id);
   }
 
-  @Post('division')
-  async getProductDivision(@Res() res: Response) {
-    const products = await this.productsService.getProductDivision();
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  //   return this.productsService.update(+id, updateProductDto);
+  // }
 
-    if (!products) {
-      return res.status(HttpStatus.BAD_REQUEST).send('No products found');
-    }
-    return res.status(HttpStatus.OK).json('products');
-  }
-
-  @Post('search')
-  async searchProduct(@Body('name') name: string, @Res() res: Response) {
-    const products = await this.productsService.searchProduct(name);
-
-    if (!products) {
-      return res.status(HttpStatus.BAD_REQUEST).send('No products found');
-    }
-    return res.status(HttpStatus.OK).json('products');
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.productsService.remove(+id);
   }
 }
