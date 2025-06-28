@@ -6,7 +6,6 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { UserService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { signJWT, verifyJWT } from '../lib/jwt';
