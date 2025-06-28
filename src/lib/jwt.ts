@@ -1,27 +1,30 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 interface SignOption {
-    expiresIn: string | number;
+  expiresIn: string | number;
 }
 
 const DEFAULT_SIGN_OPTION: SignOption = {
-    expiresIn: '1d'
-}
+  expiresIn: '1d',
+};
 
-export function signJWT(payload: JwtPayload, option: SignOption = DEFAULT_SIGN_OPTION) {
-    const secretKey = process.env.JWT_USER_ID_SECRET!;
-    const token = jwt.sign(payload, secretKey, option);
+export function signJWT(
+  payload: JwtPayload,
+  option: SignOption = DEFAULT_SIGN_OPTION,
+) {
+  const secretKey = process.env.JWT_USER_ID_SECRET!;
+  const token = jwt.sign(payload, secretKey, option);
 
-    return token;
+  return token;
 }
 
 export function verifyJWT(token: string) {
-    try {
-        const secretKey = process.env.JWT_USER_ID_SECRET!;
-        const decoded = jwt.verify(token, secretKey);
-        return decoded as JwtPayload;
-    } catch (e) {
-        console.log(e);
-        return null;
-    }
+  try {
+    const secretKey = process.env.JWT_USER_ID_SECRET!;
+    const decoded = jwt.verify(token, secretKey);
+    return decoded as JwtPayload;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
