@@ -15,8 +15,26 @@ export class ProductsService {
     return this.prisma.product.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async getProductById(id: string) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+      include: {
+        image: true,
+        product_variant: {
+          include: {
+            product_variant_option: true,
+          },
+        },
+        product_option: true,
+        product_tags: true,
+      },
+    });
+
+    if (!product) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+
+    return product;
   }
 
   // update(id: number, updateProductDto: UpdateProductDto) {

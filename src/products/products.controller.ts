@@ -6,6 +6,7 @@ import {
   // Patch,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 // import { CreateProductDto } from './dto/create-product.dto';
@@ -26,8 +27,15 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(+id);
+  async getProduct(@Param('id') id: string) {
+    try {
+      const product = await this.productsService.getProductById(id);
+      return { product };
+    } catch (err) {
+      throw new NotFoundException(
+        `Product with ID ${id} not found. Error: ${err.message}`,
+      );
+    }
   }
 
   // @Patch(':id')
